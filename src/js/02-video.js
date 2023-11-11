@@ -15,4 +15,4 @@ if(time !== null) {
 
 function setTime({seconds}) {
     localStorage.setItem(timePl, seconds);
-}
+};
