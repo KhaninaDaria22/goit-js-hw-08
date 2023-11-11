@@ -11,8 +11,6 @@ const refs ={
 refs.form.addEventListener('submit', onFormSubmit);
 refs.textarea.addEventListener('input', throttle(onTextareaInput, 500));
 
-populateTextarea();
-
 function onFormSubmit(evt) {
     evt.preventDefault();
 
