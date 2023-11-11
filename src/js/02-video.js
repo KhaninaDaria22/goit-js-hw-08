@@ -13,6 +13,7 @@ if(time !== null) {
     player.setCurrentTime(time);
 }
 
+
 function setTime({seconds}) {
     localStorage.setItem(timePl, seconds);
 };
