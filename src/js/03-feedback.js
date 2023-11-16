@@ -1,44 +1,46 @@
 import throttle from 'lodash.throttle';
 
-const STORAGE_KEY = 'feedback-form-state';
-const formData = {};
+const formEl = document.querySelector('.feedback-form');
+const LS_FORM_STATE = 'feedback-form-state';
+let formData = {};
 
-const refs ={
-    form: document.querySelector('.feedback-form'),
-    textarea: document.querySelector('.feedback-form textarea'),
-};
+formEl.addEventListener('input', throttle(handleFormInput, 500));
+formEl.addEventListener('submit', handleFormSubmit);
 
-refs.form.addEventListener('submit', onFormSubmit);
-refs.textarea.addEventListener('input', throttle(onTextareaInput, 500));
+function handleFormInput(event) {
+    console.log(event.target);
+    formData[event.target.name] = event.target.value;
 
-function onFormSubmit(evt) {
-    evt.preventDefault();
-
-    console.log('відправили форму');
-    evt.currentTarget.reset();
-    localStorage.removeItem(STORAGE_KEY);
+    const jsonFormData = JSON.stringify(formData);
+    localStorage.setItem(LS_FORM_STATE, jsonFormData);
 }
 
-function onTextareaInput(evt) {
-    const message = evt.target.value;
+function handleFormSubmit(event) {
+    event.preventDefault();
 
-    localStorage.setItem(STORAGE_KEY, message);
+    const formElements = formEl.elements;
+    const email = formElements.email.value;
+    const message = formElements.message.value;
+
+    if (!email || !message) return alert('All the fields should be filled');
+
+    console.log(formData);
+
+    localStorage.removeItem(LS_FORM_STATE);
+    formData = {};
+    event.currentTarget.reset();
 }
 
-function populateTextarea() {
-    const savedMessage = localStorage.getItem(STORAGE_KEY);
+function populateForm() {
+    if (localStorage.getItem(LS_FORM_STATE)) {
+        formData = JSON.parse(localStorage.getItem(LS_FORM_STATE));
 
-    if(savedMessage) {
-        refs.textarea.value = savedMessage;
+        for (const key in formData) {
+            if (formData[key]) {
+                formEl.elements[key].value = formData[key];
+            }
+        }
     }
-
-    refs.form.addEventListener('input', e => {
-        console.log(e.target.name);
-        console.log(e.target.value);
-
-        formData[e.target.value] = e.target.value;
-
-        console.log(formData);
-    })
 }
 
+populateForm();
